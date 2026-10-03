@@ -100,12 +100,29 @@ button {
   color: var(--color-text-muted);
 }
 
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(320px, 78vw);
+}
+
 .progress-track {
-  width: min(280px, 70vw);
+  flex: 1;
   height: 4px;
   border-radius: 999px;
   background: rgba(61, 52, 44, 0.12);
   overflow: hidden;
+}
+
+.progress-percent {
+  flex: none;
+  min-width: 3.2em;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
 }
 
 .progress-value {
