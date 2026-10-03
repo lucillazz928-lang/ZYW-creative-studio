@@ -1,5 +1,5 @@
 import { Canvas, useFrame } from '@react-three/fiber'
-import { lazy, Suspense, useEffect, useRef } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { CameraController } from './components/Scene/CameraController'
 import { Environment } from './components/Scene/Environment'
 import { Door } from './components/Scene/Door'
@@ -82,6 +82,7 @@ function AppShell() {
     closeOverlay,
   } = useInteraction()
   const hovered = interactiveObjects.find((item) => item.id === hoveredObject)
+  const [splashDone, setSplashDone] = useState(false)
 
   useEffect(() => {
     const onKeyDown = (event) => {
@@ -140,7 +141,7 @@ function AppShell() {
         </Canvas>
       </div>
       <div className="ui-layer">
-        {!isLoaded ? <LoadingScreen progress={loadProgress} /> : null}
+        {!splashDone || !isLoaded ? <LoadingScreen onFinished={() => setSplashDone(true)} /> : null}
         {isLoaded && cameraState === 'entry' && !isTransitioning ? (
           <>
             <EntryTitle />

@@ -1,33 +1,26 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { siteProfile } from '../content/profile'
 
-function clampPercent(value) {
-  return Math.min(100, Math.max(0, Math.round(value)))
-}
-
-export function LoadingScreen({ progress = 0 }) {
-  const [shown, setShown] = useState(() => clampPercent(Math.max(progress, 6)))
+export function LoadingScreen({ onFinished }) {
+  const [percent, setPercent] = useState(1)
+  const finishedRef = useRef(false)
 
   useEffect(() => {
-    const reduced =
-      typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-    const tick = () => {
-      setShown((current) => {
-        if (progress >= 100) return 100
-        if (reduced) return clampPercent(Math.max(current, progress, 8))
-        const ceiling = progress >= 40 ? 94 : 38
-        const step = current < 28 ? 1.8 : current < 62 ? 0.9 : 0.35
-        return clampPercent(Math.min(ceiling, Math.max(current, progress) + step))
+    const id = window.setInterval(() => {
+      setPercent((current) => {
+        if (current >= 100) return 100
+        return current + 1
       })
-    }
-
-    tick()
-    const id = window.setInterval(tick, reduced ? 320 : 110)
+    }, 8)
     return () => window.clearInterval(id)
-  }, [progress])
+  }, [])
 
-  const percent = progress >= 100 ? 100 : shown
+  useEffect(() => {
+    if (percent < 100 || finishedRef.current) return undefined
+    finishedRef.current = true
+    const done = window.setTimeout(() => onFinished?.(), 80)
+    return () => window.clearTimeout(done)
+  }, [percent, onFinished])
 
   return (
     <section className="screen-panel" aria-busy="true" aria-live="polite">
