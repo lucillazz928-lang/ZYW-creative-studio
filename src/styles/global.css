@@ -505,6 +505,14 @@ button {
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
+.desk-near-hint {
+  margin: 0;
+  cursor: default;
+  text-align: center;
+  white-space: normal;
+  line-height: 1.45;
+}
+
 .entry-enter-frame:hover:not(:disabled) {
   transform: translateY(-1px);
   filter: brightness(1.02);

@@ -1,13 +1,13 @@
 import gsap from 'gsap'
 import * as THREE from 'three'
-import { CAMERA_PRESETS } from './cameraPresets'
+import { CAMERA_PRESETS, getCameraPreset } from './cameraPresets'
 
 function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
 export function animateCameraTo(camera, stateName, { onStart, onComplete, fromLookAt, onFrame } = {}) {
-  const preset = CAMERA_PRESETS[stateName]
+  const preset = getCameraPreset(stateName)
   if (!camera || !preset) return null
 
   const duration = prefersReducedMotion() ? 0.01 : preset.duration
@@ -105,7 +105,7 @@ export function animateCameraThrough(
   const dir = new THREE.Vector3()
   camera.getWorldDirection(dir)
   const origin = camera.position.clone()
-  const first = CAMERA_PRESETS[stateNames[0]]
+  const first = getCameraPreset(stateNames[0]) || CAMERA_PRESETS[stateNames[0]]
   const planeY = first?.lookAt?.[1] ?? 1
   const t = Math.abs(dir.y) > 0.001 ? (planeY - origin.y) / dir.y : 1
   const hit = origin.clone().addScaledVector(dir, Math.max(0.5, Math.min(t, 12)))
@@ -121,7 +121,7 @@ export function animateCameraThrough(
       onFrame?.()
     },
     onComplete: () => {
-      const last = CAMERA_PRESETS[stateNames[stateNames.length - 1]]
+      const last = getCameraPreset(stateNames[stateNames.length - 1])
       if (last) camera.lookAt(...last.lookAt)
       onFrame?.()
       onComplete?.()
@@ -130,7 +130,7 @@ export function animateCameraThrough(
 
   const reduced = prefersReducedMotion()
   stateNames.forEach((name, index) => {
-    const preset = CAMERA_PRESETS[name]
+    const preset = getCameraPreset(name)
     if (!preset) return
     // 进门：门外贴近稍长，入室再舒缓推
     const scale =

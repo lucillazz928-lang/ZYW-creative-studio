@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from 'react'
 import { useThree } from '@react-three/fiber'
 import { animateCameraTo } from '../../animation/cameraAnimations'
-import { CAMERA_PRESETS } from '../../animation/cameraPresets'
+import { CAMERA_PRESETS, getCameraPreset } from '../../animation/cameraPresets'
 import { useInteraction } from '../../state/interactionState'
 
 function prefersReducedMotion() {
@@ -19,7 +19,7 @@ export function CameraController() {
     // 等店面+房间预挂载结束再播封面镜头，避免和建 mesh 抢帧
     if (!isLoaded) return undefined
 
-    const preset = CAMERA_PRESETS[cameraState]
+    const preset = getCameraPreset(cameraState)
     if (!preset) return undefined
 
     const prev = prevCameraStateRef.current

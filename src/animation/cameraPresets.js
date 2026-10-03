@@ -49,3 +49,28 @@ export const CAMERA_PRESETS = {
     duration: 0.8,
   },
 }
+
+/** 竖屏把 desk/focus 拉远一点，避免电脑屏幕占满整机、点不到旁边空白 */
+const NARROW_OVERRIDES = {
+  desk: {
+    position: [0, 1.78, 2.42],
+    lookAt: [0, 1.02, -0.22],
+    fov: 46,
+  },
+  focus: {
+    position: [0, 1.72, 1.95],
+    lookAt: [0, 1.05, -0.15],
+    fov: 42,
+  },
+}
+
+export function isNarrowViewport() {
+  return typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
+}
+
+export function getCameraPreset(stateName) {
+  const preset = CAMERA_PRESETS[stateName]
+  if (!preset) return preset
+  const overlay = isNarrowViewport() ? NARROW_OVERRIDES[stateName] : null
+  return overlay ? { ...preset, ...overlay } : preset
+}
