@@ -141,7 +141,9 @@ function AppShell() {
         </Canvas>
       </div>
       <div className="ui-layer">
-        {!splashDone || !isLoaded ? <LoadingScreen onFinished={() => setSplashDone(true)} /> : null}
+        {!splashDone || !isLoaded ? (
+          <LoadingScreen assetsReady={isLoaded} onFinished={() => setSplashDone(true)} />
+        ) : null}
         {isLoaded && cameraState === 'entry' && !isTransitioning ? (
           <>
             <EntryTitle />

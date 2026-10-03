@@ -1,26 +1,44 @@
 import { useEffect, useRef, useState } from 'react'
 import { siteProfile } from '../content/profile'
 
-export function LoadingScreen({ onFinished }) {
+const CRAWL_MS = 1600
+
+export function LoadingScreen({ assetsReady = false, onFinished }) {
   const [percent, setPercent] = useState(1)
+  const readyRef = useRef(assetsReady)
   const finishedRef = useRef(false)
+  const onFinishedRef = useRef(onFinished)
+  readyRef.current = assetsReady
+  onFinishedRef.current = onFinished
 
   useEffect(() => {
-    const id = window.setInterval(() => {
-      setPercent((current) => {
-        if (current >= 100) return 100
-        return current + 1
-      })
-    }, 8)
-    return () => window.clearInterval(id)
+    const started = performance.now()
+    let shown = 1
+    let raf = 0
+
+    const loop = (now) => {
+      const elapsed = now - started
+      const crawled = Math.min(90, 1 + Math.floor((elapsed / CRAWL_MS) * 89))
+      const target = readyRef.current ? 100 : crawled
+      if (shown < target) {
+        shown += 1
+        setPercent(shown)
+      }
+      if (shown < 100) {
+        raf = window.requestAnimationFrame(loop)
+      }
+    }
+
+    raf = window.requestAnimationFrame(loop)
+    return () => window.cancelAnimationFrame(raf)
   }, [])
 
   useEffect(() => {
     if (percent < 100 || finishedRef.current) return undefined
     finishedRef.current = true
-    const done = window.setTimeout(() => onFinished?.(), 80)
+    const done = window.setTimeout(() => onFinishedRef.current?.(), 60)
     return () => window.clearTimeout(done)
-  }, [percent, onFinished])
+  }, [percent])
 
   return (
     <section className="screen-panel" aria-busy="true" aria-live="polite">
