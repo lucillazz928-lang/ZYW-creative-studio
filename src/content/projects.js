@@ -1,0 +1,36 @@
+/** Computer 项目案例：三公司文件夹（配色与文案按品牌参考） */
+export const computerFolders = [
+  {
+    id: 'tencent-music',
+    nameZh: '腾讯音乐',
+    nameEn: 'Tencent Music',
+    period: '2025.11-2026.02',
+    color: '#3832dc',
+    textColor: '#c3e83b',
+    size: 2.55,
+    rotate: -9,
+    zIndex: 2,
+  },
+  {
+    id: 'ximalaya',
+    nameZh: '喜马拉雅',
+    nameEn: 'Ximalaya',
+    period: '2025.01-2025.06',
+    color: '#c3e83b',
+    textColor: '#3832dc',
+    size: 2.95,
+    rotate: 6,
+    zIndex: 4,
+  },
+  {
+    id: 'adopt-a-cow',
+    nameZh: '认养一头牛',
+    nameEn: 'Adopt A Cow',
+    period: '2025.07-2025.11',
+    color: '#000000',
+    textColor: '#b84338',
+    size: 2.6,
+    rotate: -11,
+    zIndex: 3,
+  },
+]

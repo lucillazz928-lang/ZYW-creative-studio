@@ -1,0 +1,37 @@
+---
+description: 创意小屋作品集长期约定（文档优先、分阶段、风格与交互冻结）
+alwaysApply: true
+---
+
+# 郑轶玟创意小屋 · 项目规则
+
+## 文档与范围
+- 优先遵守 plan（`个人创意工作空间网站开发计划.docx` / `CONTEXT.md`）；模糊处先问用户，禁止私自加功能或改配色/布局/交互。
+- **分阶段交付**：完成一阶段即停，等用户确认再继续。
+- 已冻结：无 RESUME；留言墙 Supabase 全站共享；Playground 二期；Computer 仅三公司文件夹；手机同套 3D+点击、无复杂手势。
+
+## 技术约定
+- 栈：React + Vite + R3F + Three + Drei + GSAP；状态用 Context，勿擅自加 Redux/Zustand。
+- Overlay 用 React HTML/CSS；3D 场景保持在 Canvas 下。主动画用 GSAP，CSS 仅基础样式与短过渡。
+- 文案与导航放 `src/content/`，勿硬编码进 3D 组件。
+- 密钥只放 `.env`（`VITE_SUPABASE_*`），勿提交、勿写进源码常量。
+
+## 组件与目录
+- `src/components/Scene/`：3D 物件；`src/ui/`：2D Overlay/壳；`src/scenes/`：ENTRY/ROOM；`src/animation/`、`src/state/`、`src/lib/`。
+- 组件用 PascalCase 文件名（如 `MessageWall.jsx`）；配置/工具用 camelCase。
+- 样式：全局 CSS + CSS 变量（`src/styles/global.css`），**不用 Tailwind / CSS Modules**，除非用户明确要求。
+
+## 视觉与交互（每次遵守）
+- 色调：暖白/奶白、浅木、植物绿、柔和蓝；入口门木色、墙奶白、背景不同色。禁止赛博紫、工业黑、HUD 感。
+- 中文叙事 + 英文小标签；入口弧形标题字体暂缓大改（用户说之后再调）。
+- 镜头：`entry → room → desk ↔ focus`；Overlay 关闭回原视角，不回门口。DESK 回 ROOM：点空白墙或 Esc，**不要**常驻「返回全景」按钮。
+- ROOM 点留言墙须可直接打开；禁止用大透明 hit 层挡住留言板。
+- Hover 约 1.03–1.05；尊重 `prefers-reduced-motion`。
+
+## 响应式
+- 桌面优先；手机同一 3D 场景 + 点击（悬停改为点击提示），不做双指旋转/捏合/自由漫游。
+- Overlay 须在窄屏可读（滚动、留白用 `--space-page`）；Canvas 全屏，UI 层 `pointer-events` 分离。
+
+## 内容
+- Computer 文件夹：认养一头牛 / 腾讯音乐 / 喜马拉雅；视频内嵌。
+- ID CARD 展示邮箱与手机；身份文案来自 `src/content/profile.js`。

@@ -1,0 +1,159 @@
+.mkt-doors {
+  --mkt-ink: #1a1a1a;
+  --mkt-accent: #4f74c8;
+  --mkt-muted: rgba(26, 26, 26, 0.48);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(18px, 3vh, 28px);
+  width: 100%;
+  height: 100%;
+  min-height: 70vh;
+  padding: clamp(48px, 8vh, 80px) clamp(20px, 4vw, 48px) clamp(56px, 8vh, 72px);
+  box-sizing: border-box;
+  background: #ffffff;
+  color: var(--mkt-ink);
+}
+
+.mkt-doors--empty {
+  color: #888;
+}
+
+.mkt-doors__watermark {
+  position: absolute;
+  z-index: 0;
+  top: clamp(18px, 3.5vh, 40px);
+  left: clamp(22px, 3.5vw, 52px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0;
+  font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+  font-size: clamp(2.6rem, 6.2vw, 4.8rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.12;
+  letter-spacing: 0.02em;
+  color: rgba(47, 42, 38, 0.13);
+  pointer-events: none;
+  user-select: none;
+}
+
+.mkt-doors__watermark-line {
+  display: block;
+}
+
+.mkt-doors__list {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(28px, 5vw, 56px);
+  width: min(100%, 860px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mkt-doors__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  flex: 0 1 auto;
+  width: min(46vw, 320px);
+}
+
+.mkt-doors__item .work-vp {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* 宽高比由 frameAspect 锁成同一画框；这里只限上限，避免黑边 */
+.mkt-doors__item .work-vp--portrait .work-vp__stage {
+  width: 100%;
+  max-width: 100%;
+  max-height: min(68vh, 640px);
+  height: auto;
+}
+
+.mkt-doors__poster-fallback {
+  width: 100%;
+  aspect-ratio: 1080 / 2134;
+  max-height: min(68vh, 640px);
+  overflow: hidden;
+  border-radius: 18px;
+  background: #000;
+}
+
+.mkt-doors__poster-fallback img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+/* 封面是 3:4：在统一画框里按原比例居中，上下留黑。播放时成片仍铺满画框。 */
+.mkt-doors__item .work-vp--letterbox-poster .work-vp__video {
+  object-fit: cover;
+  background: #000;
+}
+
+.mkt-doors__caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  margin: 0;
+  text-align: center;
+}
+
+.mkt-doors__caption-zh {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--mkt-ink);
+}
+
+.mkt-doors__caption-en {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mkt-muted);
+}
+
+@media (max-width: 640px) {
+  .mkt-doors__watermark {
+    top: 12px;
+    left: 12px;
+    font-size: clamp(1.85rem, 9vw, 2.6rem);
+  }
+
+  .mkt-doors__list {
+    gap: 14px;
+    width: 100%;
+  }
+
+  .mkt-doors__item {
+    width: min(46vw, 180px);
+  }
+
+  .mkt-doors__item .work-vp--portrait .work-vp__stage {
+    max-height: min(56vh, 460px);
+    border-radius: 14px;
+  }
+
+  .mkt-doors__poster-fallback {
+    border-radius: 14px;
+    max-height: min(56vh, 460px);
+  }
+
+  .mkt-doors__caption-zh {
+    font-size: 0.68rem;
+  }
+}

@@ -1,0 +1,207 @@
+.cat-video {
+  --cv-ink: #1a1a1a;
+  --cv-accent: #4f74c8;
+  --cv-muted: rgba(26, 26, 26, 0.48);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 2.5vh, 24px);
+  width: 100%;
+  height: 100%;
+  min-height: 70vh;
+  padding: clamp(48px, 8vh, 80px) clamp(48px, 6vw, 88px) clamp(56px, 8vh, 72px);
+  box-sizing: border-box;
+  background: #ffffff;
+  color: var(--cv-ink);
+}
+
+.cat-video--empty {
+  color: #888;
+}
+
+.cat-video__empty-hint {
+  margin: 0;
+  max-width: 28em;
+  padding: 0 24px;
+  font-size: clamp(0.88rem, 1.4vw, 1.05rem);
+  line-height: 1.65;
+  text-align: center;
+  color: var(--cv-muted);
+  letter-spacing: 0.04em;
+}
+
+.cat-video__watermark {
+  position: absolute;
+  z-index: 0;
+  top: clamp(18px, 3.5vh, 40px);
+  left: clamp(22px, 3.5vw, 52px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0;
+  font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+  font-size: clamp(2.6rem, 6.2vw, 4.8rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.12;
+  letter-spacing: 0.02em;
+  color: rgba(47, 42, 38, 0.13);
+  pointer-events: none;
+  user-select: none;
+}
+
+.cat-video__watermark-line {
+  display: block;
+}
+
+.cat-video__stage {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: min(100%, 1100px);
+}
+
+/* 视频行：下一页圆钮相对视频画面垂直居中 */
+.cat-video__media {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding-right: clamp(52px, 6vw, 72px);
+  box-sizing: border-box;
+}
+
+.cat-video__poster-fallback {
+  width: min(92vw, 980px);
+  aspect-ratio: 16 / 9;
+  max-height: min(64vh, 620px);
+  overflow: hidden;
+  border-radius: 18px;
+  background: transparent;
+}
+
+.cat-video__poster-fallback img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: transparent;
+}
+
+.cat-video__caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  margin: 0;
+  text-align: center;
+}
+
+.cat-video__caption-zh {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--cv-ink);
+}
+
+.cat-video__caption-en {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cv-muted);
+}
+
+.cat-video__page {
+  margin-top: 4px;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: var(--cv-muted);
+}
+
+.cat-video__next {
+  appearance: none;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: clamp(44px, 5.5vw, 56px);
+  height: clamp(44px, 5.5vw, 56px);
+  margin: 0;
+  padding: 0;
+  border: 1.5px solid rgba(79, 116, 200, 0.55);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--cv-accent);
+  cursor: pointer;
+  transform: translateY(-50%);
+  box-shadow: 0 4px 18px rgba(26, 26, 26, 0.08);
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.cat-video__next:hover,
+.cat-video__next:focus-visible {
+  transform: translateY(-50%) scale(1.04);
+  background: #fff;
+  border-color: var(--cv-accent);
+  color: #3358a8;
+}
+
+.cat-video__next:active {
+  transform: translateY(-50%) scale(0.98);
+}
+
+.cat-video__next-icon {
+  width: 22px;
+  height: 22px;
+  margin-left: 2px;
+}
+
+@media (max-width: 640px) {
+  .cat-video {
+    padding-inline: 12px;
+    padding-bottom: 64px;
+  }
+
+  .cat-video__watermark {
+    top: 12px;
+    left: 12px;
+    font-size: clamp(1.85rem, 9vw, 2.6rem);
+  }
+
+  .cat-video__media {
+    padding-right: 48px;
+  }
+
+  .cat-video__next {
+    width: 40px;
+    height: 40px;
+  }
+
+  .cat-video__next-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .cat-video__caption-zh {
+    font-size: 0.68rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cat-video__next {
+    transition: none;
+  }
+}

@@ -1,0 +1,173 @@
+/* Codrops V2 入场 + 底部圆心大半圆滑轨 */
+
+.poster-stack {
+  --ps-ink: #1e1a17;
+  --ps-muted: rgba(47, 42, 38, 0.62);
+  --ps-cream: #efe9df;
+  --ps-cream-alt: #d9d0c4;
+  --ps-serif: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+  --ps-sans: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  color: var(--ps-ink);
+  font-family: var(--ps-sans);
+  background:
+    radial-gradient(ellipse 80% 70% at 50% 38%, var(--ps-cream) 0%, var(--ps-cream-alt) 100%);
+  touch-action: none;
+}
+
+.poster-stack::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  mix-blend-mode: multiply;
+}
+
+.poster-stack__chrome {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.poster-stack__back {
+  appearance: none;
+  pointer-events: auto;
+  position: absolute;
+  top: clamp(16px, 2.5vw, 28px);
+  left: clamp(16px, 2.5vw, 32px);
+  margin: 0;
+  padding: 0 0 6px;
+  border: 0;
+  border-bottom: 1px solid rgba(47, 42, 38, 0.35);
+  background: transparent;
+  font: inherit;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ps-muted);
+  cursor: pointer;
+}
+
+.poster-stack__back:hover,
+.poster-stack__back:focus-visible {
+  color: var(--ps-ink);
+  border-bottom-color: rgba(47, 42, 38, 0.85);
+}
+
+.poster-stack__header {
+  position: absolute;
+  top: clamp(12px, 2vw, 22px);
+  right: clamp(16px, 3vw, 40px);
+  text-align: right;
+  pointer-events: none;
+}
+
+.poster-stack__title {
+  margin: 0;
+  font-family: var(--ps-serif);
+  font-weight: 700;
+  font-size: clamp(2.6rem, 1.2rem + 6vw, 5.5rem);
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  color: var(--ps-ink);
+}
+
+.poster-stack__hint {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(18px, 3.5vh, 36px);
+  margin: 0;
+  transform: translateX(-50%);
+  pointer-events: none;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  color: var(--ps-muted);
+  white-space: nowrap;
+  opacity: 0.85;
+}
+
+.poster-stack__scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.poster-stack__group {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.poster-stack__card {
+  appearance: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  will-change: transform, opacity;
+  /* 不用 filter:drop-shadow（入场缩放时极卡），改用便宜 box-shadow */
+  box-shadow: 0 14px 28px rgba(47, 42, 38, 0.16);
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.poster-stack--entering .poster-stack__card {
+  box-shadow: none;
+}
+
+.poster-stack__img {
+  display: block;
+  width: clamp(11rem, 22vw, 16rem);
+  aspect-ratio: 2 / 3;
+  border-radius: 12px;
+  background-color: #ddd6cb;
+  background-position: center;
+  background-size: cover;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+  backface-visibility: hidden;
+}
+
+@media (max-width: 768px) {
+  .poster-stack__title {
+    font-size: clamp(2rem, 12vw, 3.2rem);
+  }
+
+  .poster-stack__img {
+    width: clamp(8rem, 36vw, 11rem);
+  }
+
+  .poster-stack__back {
+    max-width: 42vw;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poster-stack__card,
+  .poster-stack__chrome {
+    transition: none !important;
+  }
+}

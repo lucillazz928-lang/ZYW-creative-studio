@@ -1,0 +1,402 @@
+.work-vp .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.work-vp {
+  --wp-fill: #ffffff;
+  --wp-track: rgba(255, 255, 255, 0.35);
+  --wp-thumb: #ffffff;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+.work-vp__stage {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 18px;
+  background: transparent;
+  margin-inline: auto;
+}
+
+/* 宽高同时受限时按真实宽高比收缩；视频用 cover 铺满，不留黑边 */
+.work-vp--landscape .work-vp__stage {
+  --wp-max-w: min(92vw, 980px, 100%);
+  --wp-max-h: min(64vh, 620px);
+  width: min(var(--wp-max-w), calc(var(--wp-max-h) * var(--wp-ar, 1.777)));
+  max-width: 100%;
+  max-height: var(--wp-max-h);
+  height: auto;
+  aspect-ratio: var(--wp-ar, 16 / 9);
+}
+
+.work-vp--portrait .work-vp__stage {
+  --wp-max-w: min(48vw, 360px);
+  --wp-max-h: min(68vh, 640px);
+  width: min(var(--wp-max-w), calc(var(--wp-max-h) * var(--wp-ar, 0.5625)));
+  max-width: 100%;
+  max-height: var(--wp-max-h);
+  height: auto;
+  aspect-ratio: var(--wp-ar, 9 / 16);
+}
+
+.work-vp__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  background: transparent;
+  cursor: pointer;
+}
+
+.work-vp__poster-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* 3:4 封面进 9:16 竖屏框：contain + 黑底，上下留黑边 */
+.work-vp--letterbox-poster .work-vp__stage {
+  background: #000;
+}
+
+.work-vp--letterbox-poster .work-vp__poster-layer {
+  object-fit: contain;
+  background: #000;
+}
+
+.work-vp--letterbox-poster .work-vp__video {
+  object-fit: contain;
+  background: #000;
+}
+
+.work-vp__play {
+  appearance: none;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.18);
+  color: #fff;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.22s ease, background 0.22s ease;
+}
+
+.work-vp__play.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.work-vp__play.is-hint {
+  opacity: 0.5;
+  pointer-events: auto;
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.work-vp__play:hover,
+.work-vp__play:focus-visible {
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.work-vp__icon {
+  width: clamp(44px, 7vw, 68px);
+  height: clamp(44px, 7vw, 68px);
+  fill: #ffffff;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.35));
+  transform: translateX(4%);
+}
+
+.work-vp__icon--pause {
+  transform: none;
+}
+
+.work-vp__overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  padding: 28px 14px 12px;
+  box-sizing: border-box;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.62) 0%,
+    rgba(0, 0, 0, 0.28) 55%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.work-vp__overlay.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.work-vp__overlay-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.work-vp__time {
+  flex: 0 0 auto;
+  min-width: 2.2em;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.88);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.work-vp__progress {
+  flex: 1 1 auto;
+  display: block;
+  min-width: 0;
+}
+
+.work-vp__volume {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.work-vp__mute {
+  appearance: none;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.work-vp__mute:hover,
+.work-vp__mute:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.work-vp__vol-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.work-vp__vol-popup {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 10px;
+  background: rgba(20, 20, 20, 0.72);
+  opacity: 0;
+  transform: translateX(-50%) translateY(4px);
+  pointer-events: none;
+  transition:
+    height 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    padding 0.2s ease;
+}
+
+.work-vp__volume.is-open .work-vp__vol-popup,
+.work-vp__volume:focus-within .work-vp__vol-popup {
+  height: 108px;
+  padding: 12px 0 10px;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+.work-vp__vol-slider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.work-vp input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 18px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.work-vp__progress input[type='range'] {
+  background: linear-gradient(
+    to right,
+    var(--wp-fill) 0%,
+    var(--wp-fill) var(--wp-progress, 0%),
+    var(--wp-track) var(--wp-progress, 0%),
+    var(--wp-track) 100%
+  );
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 3px;
+  border-radius: 999px;
+}
+
+.work-vp__progress input[type='range']::-webkit-slider-runnable-track {
+  height: 3px;
+  background: transparent;
+}
+
+.work-vp__progress input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 11px;
+  height: 11px;
+  margin-top: -4px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--wp-thumb);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.work-vp__progress input[type='range']::-moz-range-track {
+  height: 3px;
+  background: transparent;
+  border: 0;
+}
+
+.work-vp__progress input[type='range']::-moz-range-thumb {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--wp-thumb);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.work-vp__vol-slider input[type='range'] {
+  width: 72px;
+  height: 18px;
+  transform: rotate(-90deg);
+  transform-origin: center center;
+  background: linear-gradient(
+    to right,
+    #fff 0%,
+    #fff var(--wp-vol, 85%),
+    rgba(255, 255, 255, 0.28) var(--wp-vol, 85%),
+    rgba(255, 255, 255, 0.28) 100%
+  );
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 3px;
+}
+
+.work-vp__vol-slider input[type='range']::-webkit-slider-runnable-track {
+  height: 3px;
+  background: transparent;
+}
+
+.work-vp__vol-slider input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 11px;
+  height: 11px;
+  margin-top: -4px;
+  border-radius: 50%;
+  border: 0;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.work-vp__vol-slider input[type='range']::-moz-range-track {
+  height: 3px;
+  background: transparent;
+  border: 0;
+}
+
+.work-vp__vol-slider input[type='range']::-moz-range-thumb {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 0;
+  background: #fff;
+}
+
+@media (max-width: 640px) {
+  .work-vp--portrait .work-vp__stage {
+    --wp-max-w: min(44vw, 180px);
+    --wp-max-h: min(56vh, 460px);
+    border-radius: 14px;
+  }
+
+  .work-vp--landscape .work-vp__stage {
+    --wp-max-w: min(94vw, 980px, 100%);
+    --wp-max-h: min(42vh, 340px);
+    border-radius: 14px;
+  }
+
+  .work-vp__overlay {
+    padding: 22px 10px 10px;
+  }
+
+  .work-vp__volume.is-open .work-vp__vol-popup,
+  .work-vp__volume:focus-within .work-vp__vol-popup {
+    height: 96px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work-vp__overlay,
+  .work-vp__vol-popup,
+  .work-vp__play {
+    transition: none;
+  }
+}
+
+@media (hover: none) {
+  .work-vp__overlay {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+}

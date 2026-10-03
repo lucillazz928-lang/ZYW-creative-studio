@@ -1,0 +1,267 @@
+/* 3D Book Gallery — scoped port of CodePen RNRaXwZ */
+
+@property --page-rotate {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+
+@property --spine-shift {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
+.proposal-book {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  font-family: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+  color: #2d2620;
+}
+
+.proposal-book__gallery-back {
+  appearance: none;
+  position: absolute;
+  z-index: 40;
+  top: clamp(18px, 3vw, 28px);
+  left: clamp(18px, 3vw, 32px);
+  margin: 0;
+  padding: 0 0 6px;
+  border: 0;
+  border-bottom: 1px solid rgba(45, 38, 32, 0.4);
+  background: transparent;
+  font: inherit;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(45, 38, 32, 0.72);
+  cursor: pointer;
+}
+
+.proposal-book__gallery-back:hover,
+.proposal-book__gallery-back:focus-visible {
+  color: #2d2620;
+  border-bottom-color: rgba(45, 38, 32, 0.85);
+}
+
+/* —— Scene：翻页画册 —— */
+.proposal-book--scene {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #ffffff;
+}
+
+.proposal-book__flip-hint {
+  position: absolute;
+  z-index: 20;
+  top: clamp(18px, 3vw, 28px);
+  right: clamp(18px, 3vw, 32px);
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: rgba(45, 38, 32, 0.55);
+  pointer-events: none;
+}
+
+.proposal-book__bg-type {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  text-align: center;
+  font-family: 'Noto Serif SC', 'Noto Sans SC', Georgia, serif;
+  font-size: clamp(3.2rem, 13vw, 13rem);
+  font-weight: 800;
+  line-height: 0.85;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 5vw;
+  pointer-events: none;
+  z-index: 1;
+  color: var(--proposal-accent, #2a2a2a);
+  transition: color 0.35s ease;
+}
+
+.proposal-book__bg-type span {
+  display: block;
+}
+
+.proposal-book__stack {
+  /* 策案 PDF 1440×810 → 16:9 横版书页 */
+  --book-w: min(520px, 78vw);
+  --book-h: calc(var(--book-w) * 9 / 16);
+  --spine-shift: 0px;
+  position: relative;
+  width: var(--book-w);
+  height: var(--book-h);
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  transform: translateX(var(--spine-shift));
+  transition: --spine-shift 0.5s ease;
+}
+
+.proposal-book__stack.is-book-open {
+  /* 翻开过程：右移半页，给左侧摊开留空 */
+  --spine-shift: calc(var(--book-w) * 0.5);
+}
+
+.proposal-book__stack.is-book-open.is-fully-open {
+  /* 最后一页翻完：整叠都在书脊左侧，再右移半页把书回正到画面中心 */
+  --spine-shift: calc(var(--book-w) * 1);
+}
+
+.proposal-book__page {
+  appearance: none;
+  position: absolute;
+  width: var(--book-w);
+  height: var(--book-h);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform-origin: left center;
+  --page-rotate: 0deg;
+  transform: rotateY(var(--page-rotate));
+  transition:
+    --page-rotate 0.5s ease-in-out,
+    z-index 0s;
+  transition-delay:
+    calc((var(--proposal-last-i, 4) - var(--i)) * 0.1s),
+    calc((var(--proposal-last-i, 4) - var(--i)) * 0.1s + 0.25s);
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  z-index: calc(10 - var(--i));
+}
+
+.proposal-book__page.is-open {
+  --page-rotate: -180deg;
+  transition-delay: 0s, 0s;
+  z-index: calc(20 + var(--i));
+}
+
+/* 末页再点：整本错峰翻回封面（节奏对齐参考站） */
+.proposal-book__stack.is-snapping-shut {
+  --spine-shift: 0px;
+  transition: --spine-shift 0.5s ease;
+}
+
+.proposal-book__stack.is-snapping-shut .proposal-book__page {
+  transition:
+    --page-rotate var(--snap-duration, 0.5s) ease-in-out,
+    z-index 0s;
+  transition-delay:
+    calc((var(--proposal-last-i, 4) - var(--i)) * var(--snap-stagger, 0.1s)),
+    calc((var(--proposal-last-i, 4) - var(--i)) * var(--snap-stagger, 0.1s) + 0.25s);
+}
+
+.proposal-book__stack.is-snapping-shut .proposal-book__page.is-open {
+  --page-rotate: -180deg;
+}
+
+.proposal-book__page img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #f4f1ea;
+  backface-visibility: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.proposal-book__page img:nth-child(2) {
+  transform: rotateY(180deg) translateZ(1px);
+  z-index: 1;
+}
+
+.proposal-book__switch {
+  position: absolute;
+  z-index: 30;
+  bottom: clamp(48px, 8vh, 88px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  padding: 5px;
+  border-radius: 999px;
+  background: rgba(42, 42, 42, 0.06);
+  max-width: calc(100vw - 24px);
+}
+
+.proposal-book__switch-btn {
+  appearance: none;
+  margin: 0;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: rgba(45, 38, 32, 0.62);
+  cursor: pointer;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.proposal-book__switch-btn.is-active {
+  background: var(--proposal-accent, #2a2a2a);
+  color: #ffffff;
+}
+
+.proposal-book__switch-btn:hover:not(.is-active),
+.proposal-book__switch-btn:focus-visible:not(.is-active) {
+  color: #2d2620;
+}
+
+@media (max-width: 768px) {
+  .proposal-book__bg-type {
+    font-size: clamp(2.4rem, 14vw, 5rem);
+    padding: 0 4vw;
+  }
+
+  .proposal-book__stack {
+    --book-w: min(420px, 88vw);
+  }
+
+  .proposal-book__stack.is-book-open {
+    --spine-shift: calc(var(--book-w) * 0.5);
+  }
+
+  .proposal-book__stack.is-book-open.is-fully-open {
+    --spine-shift: calc(var(--book-w) * 1);
+  }
+
+  .proposal-book__flip-hint {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .proposal-book__stack,
+  .proposal-book__page {
+    transition: none !important;
+  }
+}

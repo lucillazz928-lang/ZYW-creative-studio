@@ -1,0 +1,17 @@
+node_modules
+dist
+.DS_Store
+*.local
+.vite
+.env
+.env.*.local
+.img2threejs
+.cursor/skills
+_doc_extract
+个人作品/
+内容实验室/
+*.docx
+*.pdf
+hero/
+情迷02.mp4
+混剪ten.avi
