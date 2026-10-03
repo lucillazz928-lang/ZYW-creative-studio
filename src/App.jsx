@@ -1,8 +1,10 @@
 import { Canvas, useFrame } from '@react-three/fiber'
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef } from 'react'
 import { CameraController } from './components/Scene/CameraController'
 import { Environment } from './components/Scene/Environment'
+import { Door } from './components/Scene/Door'
 import { EntryScene } from './scenes/EntryScene'
+import { RoomScene } from './scenes/RoomScene'
 import { LoadingScreen } from './ui/LoadingScreen'
 import { Tooltip } from './ui/Tooltip'
 import { EntryTitle } from './ui/EntryTitle'
@@ -17,15 +19,9 @@ import { interactiveObjects } from './content/interactiveObjects'
 const OverlayShell = lazy(() =>
   import('./ui/OverlayShell').then((mod) => ({ default: mod.OverlayShell })),
 )
-const RoomScene = lazy(() =>
-  import('./scenes/RoomScene').then((mod) => ({ default: mod.RoomScene })),
-)
-const Door = lazy(() =>
-  import('./components/Scene/Door').then((mod) => ({ default: mod.Door })),
-)
 
 /**
- * 加载页只等店面暖机；室内在门口出现后再后台挂载，加快第一次看见小屋。
+ * 加载页期间同时挂好店面+房间；满若干帧再揭开，点门时不再现场建 mesh。
  */
 function BootWarmup({ onReady }) {
   const frames = useRef(0)
@@ -43,28 +39,10 @@ function BootWarmup({ onReady }) {
 }
 
 /**
- * 店面先挂；房间稍后后台挂上并保持 visible 切换，避免进门白屏。
+ * 店面与房间始终挂载，只切 visible。
  */
 function SceneRoot() {
   const { currentScene, isLoaded, setIsLoaded, setLoadProgress } = useInteraction()
-  const [roomReady, setRoomReady] = useState(false)
-
-  useEffect(() => {
-    if (currentScene === 'room') {
-      setRoomReady(true)
-      return undefined
-    }
-    if (!isLoaded) return undefined
-    const idle = window.setTimeout(() => setRoomReady(true), 280)
-    return () => window.clearTimeout(idle)
-  }, [currentScene, isLoaded])
-
-  useEffect(() => {
-    if (!isLoaded) return undefined
-    import('./scenes/RoomScene')
-    import('./components/Scene/Door')
-    return undefined
-  }, [isLoaded])
 
   return (
     <>
@@ -73,14 +51,10 @@ function SceneRoot() {
       <group visible={currentScene === 'entry'}>
         <EntryScene />
       </group>
-      {roomReady ? (
-        <Suspense fallback={null}>
-          <group visible={currentScene === 'room'}>
-            <Door />
-            <RoomScene />
-          </group>
-        </Suspense>
-      ) : null}
+      <group visible={currentScene === 'room'}>
+        <Door />
+        <RoomScene />
+      </group>
       {!isLoaded ? (
         <BootWarmup
           onReady={() => {
