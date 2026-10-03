@@ -1,14 +1,26 @@
 import { Suspense, lazy, useEffect, useRef, useState } from 'react'
 import { CloseButton } from './CloseButton'
-import { CASE_TITLE, ContentLab } from './ContentLab'
-import { IdCard } from './IdCard'
-import { MessageWall } from './MessageWall'
-import { SkillsShowcase } from './SkillsShowcase'
 import { useInteraction } from '../state/interactionState'
 
 const WorksGallery = lazy(() =>
   import('./WorksGallery').then((mod) => ({ default: mod.WorksGallery })),
 )
+const ContentLab = lazy(() =>
+  import('./ContentLab').then((mod) => ({ default: mod.ContentLab })),
+)
+const IdCard = lazy(() => import('./IdCard').then((mod) => ({ default: mod.IdCard })))
+const MessageWall = lazy(() =>
+  import('./MessageWall').then((mod) => ({ default: mod.MessageWall })),
+)
+const SkillsShowcase = lazy(() =>
+  import('./SkillsShowcase').then((mod) => ({ default: mod.SkillsShowcase })),
+)
+
+const CASE_TITLE = {
+  'adopt-a-cow': '认养一头牛项目案例',
+  'tencent-music': '腾讯音乐项目案例',
+  ximalaya: '喜马拉雅项目案例',
+}
 
 const OVERLAY_COPY = {
   'content-lab': {
@@ -153,21 +165,35 @@ export function OverlayShell() {
             {CASE_TITLE[contentCase] || '项目案例'}
           </h2>
         ) : null}
-        {overlayState === 'message-wall' ? <MessageWall /> : null}
-        {identity ? <IdCard /> : null}
-        {contentLab ? (
-          <ContentLab
-            activeCase={contentCase}
-            onOpenCase={(id) => {
-              setCasePage('home')
-              setContentCase(id)
-            }}
-            onBackCase={() => setContentCase(null)}
-            casePage={casePage}
-            onCasePageChange={setCasePage}
-          />
+        {overlayState === 'message-wall' ? (
+          <Suspense fallback={null}>
+            <MessageWall />
+          </Suspense>
         ) : null}
-        {skills ? <SkillsShowcase /> : null}
+        {identity ? (
+          <Suspense fallback={null}>
+            <IdCard />
+          </Suspense>
+        ) : null}
+        {contentLab ? (
+          <Suspense fallback={null}>
+            <ContentLab
+              activeCase={contentCase}
+              onOpenCase={(id) => {
+                setCasePage('home')
+                setContentCase(id)
+              }}
+              onBackCase={() => setContentCase(null)}
+              casePage={casePage}
+              onCasePageChange={setCasePage}
+            />
+          </Suspense>
+        ) : null}
+        {skills ? (
+          <Suspense fallback={null}>
+            <SkillsShowcase />
+          </Suspense>
+        ) : null}
         {works ? (
           <Suspense fallback={<WorksFallback />}>
             <WorksGallery />
