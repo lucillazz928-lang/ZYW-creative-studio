@@ -48,36 +48,3 @@ export function RoomDeskHint() {
     </div>
   )
 }
-
-export function DeskNearHint() {
-  const { cameraState, isTransitioning } = useInteraction()
-  const ref = useRef(null)
-  const visible = cameraState === 'desk' && !isTransitioning
-
-  useLayoutEffect(() => {
-    const el = ref.current
-    if (!el) return undefined
-
-    if (prefersReducedMotion()) {
-      gsap.set(el, { autoAlpha: 1, y: 0 })
-      return undefined
-    }
-
-    const tween = gsap.fromTo(
-      el,
-      { autoAlpha: 0, y: 10 },
-      { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power2.out', delay: 0.15 },
-    )
-    return () => tween.kill()
-  }, [visible])
-
-  if (!visible) return null
-
-  return (
-    <div className="room-desk-hint">
-      <div className="room-desk-hint__motion" ref={ref}>
-        <p className="entry-enter-frame desk-near-hint">点电脑看项目 · 点旁边空白返回全景</p>
-      </div>
-    </div>
-  )
-}

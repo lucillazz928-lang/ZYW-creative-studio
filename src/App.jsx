@@ -9,7 +9,7 @@ import { LoadingScreen } from './ui/LoadingScreen'
 import { Tooltip } from './ui/Tooltip'
 import { EntryTitle } from './ui/EntryTitle'
 import { EntryEnterHint } from './ui/EntryEnterHint'
-import { RoomDeskHint, DeskNearHint } from './ui/RoomDeskHint'
+import { RoomDeskHint } from './ui/RoomDeskHint'
 import { ErrorBoundary } from './ui/ErrorBoundary'
 import { UnsupportedScreen } from './ui/UnsupportedScreen'
 import { InteractionProvider, useInteraction } from './state/interactionState'
@@ -149,9 +149,6 @@ function AppShell() {
         ) : null}
         {isLoaded && cameraState === 'room' && !isTransitioning && !overlayState ? (
           <RoomDeskHint />
-        ) : null}
-        {isLoaded && cameraState === 'desk' && !isTransitioning && !overlayState ? (
-          <DeskNearHint />
         ) : null}
         {(cameraState === 'desk' || cameraState === 'room') &&
         !overlayState &&
