@@ -501,6 +501,48 @@ button {
   opacity: 0;
 }
 
+.desk-explore-hint {
+  position: absolute;
+  left: 50%;
+  bottom: max(28px, 4vh);
+  transform: translateX(-50%);
+  z-index: 6;
+  pointer-events: none;
+}
+
+.desk-explore-hint__motion {
+  opacity: 0;
+}
+
+.desk-explore-hint__pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin: 0;
+  padding: 11px 26px 10px;
+  border-radius: 999px;
+  background: #f7f2ea;
+  box-shadow: 0 6px 18px rgba(90, 75, 55, 0.14);
+  color: #5c4a3a;
+  font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  line-height: 1.3;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.desk-explore-hint__zh {
+  font-size: 14px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+}
+
+.desk-explore-hint__en {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: #8a7a6a;
+}
+
 .entry-enter-frame {
   display: block;
   margin: 0;

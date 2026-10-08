@@ -10,6 +10,7 @@ import { Tooltip } from './ui/Tooltip'
 import { EntryTitle } from './ui/EntryTitle'
 import { EntryEnterHint } from './ui/EntryEnterHint'
 import { RoomDeskHint } from './ui/RoomDeskHint'
+import { DeskExploreHint } from './ui/DeskExploreHint'
 import { ErrorBoundary } from './ui/ErrorBoundary'
 import { UnsupportedScreen } from './ui/UnsupportedScreen'
 import { InteractionProvider, useInteraction } from './state/interactionState'
@@ -152,6 +153,14 @@ function AppShell() {
         ) : null}
         {isLoaded && cameraState === 'room' && !isTransitioning && !overlayState ? (
           <RoomDeskHint />
+        ) : null}
+        {/* desk 引导与 Tooltip 互斥，避免叠在底部打架 */}
+        {isLoaded &&
+        cameraState === 'desk' &&
+        !isTransitioning &&
+        !overlayState &&
+        !(hovered && !hovered.ambient) ? (
+          <DeskExploreHint />
         ) : null}
         {(cameraState === 'desk' || cameraState === 'room') &&
         !overlayState &&
