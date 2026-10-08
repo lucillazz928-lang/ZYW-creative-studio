@@ -11,6 +11,7 @@ import { EntryTitle } from './ui/EntryTitle'
 import { EntryEnterHint } from './ui/EntryEnterHint'
 import { RoomDeskHint } from './ui/RoomDeskHint'
 import { DeskExploreHint } from './ui/DeskExploreHint'
+import { DeskTopNav } from './ui/DeskTopNav'
 import { ErrorBoundary } from './ui/ErrorBoundary'
 import { UnsupportedScreen } from './ui/UnsupportedScreen'
 import { InteractionProvider, useInteraction } from './state/interactionState'
@@ -150,6 +151,12 @@ function AppShell() {
             <EntryTitle />
             <EntryEnterHint />
           </>
+        ) : null}
+        {isLoaded &&
+        (cameraState === 'room' || cameraState === 'desk') &&
+        !isTransitioning &&
+        !overlayState ? (
+          <DeskTopNav />
         ) : null}
         {isLoaded && cameraState === 'room' && !isTransitioning && !overlayState ? (
           <RoomDeskHint />

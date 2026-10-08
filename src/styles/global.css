@@ -501,6 +501,72 @@ button {
   opacity: 0;
 }
 
+/* 房间 / 桌面顶栏：对齐项目案例子页细字 + 下划线 */
+.desk-top-nav {
+  position: absolute;
+  top: max(18px, 2.4vh);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 7;
+  opacity: 0;
+  pointer-events: auto;
+  max-width: min(920px, calc(100vw - 32px));
+}
+
+.desk-top-nav__row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(18px, 2.8vw, 40px);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0 4px;
+}
+
+.desk-top-nav__row::-webkit-scrollbar {
+  display: none;
+}
+
+.desk-top-nav__link {
+  appearance: none;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 4px 0 2px;
+  border: none;
+  background: transparent;
+  color: rgba(61, 52, 44, 0.42);
+  font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: clamp(0.72rem, 1.05vw, 0.88rem);
+  font-weight: 300;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.42em;
+  text-decoration-color: rgba(61, 52, 44, 0.28);
+  cursor: pointer;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.desk-top-nav__link:hover:not(:disabled) {
+  color: #3d342c;
+  text-decoration-color: rgba(61, 52, 44, 0.55);
+}
+
+.desk-top-nav__link:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.desk-top-nav__link:focus-visible {
+  outline: 2px solid var(--color-soft-blue, #9bb8d4);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 .desk-explore-hint {
   position: absolute;
   left: 50%;

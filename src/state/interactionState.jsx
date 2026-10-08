@@ -116,6 +116,25 @@ export function InteractionProvider({ children }) {
     [cameraState, isTransitioning, overlayState],
   )
 
+  /** 顶栏快捷入口：房间 / 桌面均可直接打开对应 Overlay */
+  const openDeskEntry = useCallback(
+    (objectId, overlayId) => {
+      if (isTransitioning || overlayState || !overlayId) return false
+      if (cameraState !== 'room' && cameraState !== 'desk' && cameraState !== 'focus') return false
+
+      returnCameraRef.current = cameraState === 'room' ? 'room' : 'desk'
+      setActiveObject(objectId)
+      lastFocusRef.current = objectId
+      setOverlayState(overlayId)
+      if (cameraState === 'desk') {
+        setIsTransitioning(true)
+        setCameraState('focus')
+      }
+      return true
+    },
+    [cameraState, isTransitioning, overlayState],
+  )
+
   const closeOverlay = useCallback(() => {
     setOverlayState(null)
     setActiveObject(null)
@@ -161,6 +180,7 @@ export function InteractionProvider({ children }) {
       clearPendingDoorClose,
       hoverObject,
       selectObject,
+      openDeskEntry,
       closeOverlay,
     }),
     [
@@ -183,6 +203,7 @@ export function InteractionProvider({ children }) {
       clearPendingDoorClose,
       hoverObject,
       selectObject,
+      openDeskEntry,
       closeOverlay,
     ],
   )
