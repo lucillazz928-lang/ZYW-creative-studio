@@ -1,5 +1,5 @@
 import { Canvas, useFrame } from '@react-three/fiber'
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { CameraController } from './components/Scene/CameraController'
 import { Environment } from './components/Scene/Environment'
 import { Door } from './components/Scene/Door'
@@ -21,6 +21,15 @@ import { interactiveObjects } from './content/interactiveObjects'
 const OverlayShell = lazy(() =>
   import('./ui/OverlayShell').then((mod) => ({ default: mod.OverlayShell })),
 )
+
+function canvasPixelRatio() {
+  if (typeof window === 'undefined') return [1, 1.35]
+  const memory = navigator.deviceMemory ?? 8
+  const cores = navigator.hardwareConcurrency ?? 8
+  const narrow = window.matchMedia('(max-width: 768px)').matches
+  const cap = narrow || memory <= 4 || cores <= 4 ? 1.1 : 1.35
+  return [1, cap]
+}
 
 /**
  * 加载页期间同时挂好店面+房间；满若干帧再揭开，点门时不再现场建 mesh。
@@ -85,6 +94,7 @@ function AppShell() {
   } = useInteraction()
   const hovered = interactiveObjects.find((item) => item.id === hoveredObject)
   const [splashDone, setSplashDone] = useState(false)
+  const pixelRatio = useMemo(() => canvasPixelRatio(), [])
 
   useEffect(() => {
     const onKeyDown = (event) => {
@@ -129,7 +139,7 @@ function AppShell() {
           shadows
           frameloop={overlayState && !isTransitioning ? 'never' : 'always'}
           camera={{ position: [3.8, 3.2, 6.2], fov: 32 }}
-          dpr={[1, 1.5]}
+          dpr={pixelRatio}
           gl={{ antialias: true, powerPreference: 'high-performance' }}
           onCreated={() => {
             setLoadProgress(40)

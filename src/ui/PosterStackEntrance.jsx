@@ -252,7 +252,12 @@ export function PosterStackEntrance({
       }
     }
 
-    preload.then(run)
+    Promise.race([
+      preload,
+      new Promise((resolve) => {
+        window.setTimeout(resolve, 420)
+      }),
+    ]).then(run)
 
     return () => {
       cancelled = true

@@ -18,6 +18,13 @@ function PauseIcon() {
   )
 }
 
+function formatTime(seconds) {
+  if (!Number.isFinite(seconds) || seconds < 0) return '0:00'
+  const m = Math.floor(seconds / 60)
+  const s = Math.floor(seconds % 60)
+  return `${m}:${String(s).padStart(2, '0')}`
+}
+
 function VolumeIcon({ muted, level }) {
   if (muted || level <= 0.01) {
     return (
@@ -77,15 +84,20 @@ export function WorkVideoPlayer({
   const videoRef = useRef(null)
   const progressId = useId()
   const volumeId = useId()
-  const [progress, setProgress] = useState(0)
-  const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
+  const progressInputRef = useRef(null)
+  const progressLabelRef = useRef(null)
+  const timeCurrentRef = useRef(null)
+  const timeDurationRef = useRef(null)
+  const loadedSrcRef = useRef('')
+  const scrubbingRef = useRef(false)
+  const chromeRef = useRef(false)
   const [volume, setVolume] = useState(0.85)
   const [muted, setMuted] = useState(false)
   const [scrubbing, setScrubbing] = useState(false)
   const [hovered, setHovered] = useState(false)
   const [volOpen, setVolOpen] = useState(false)
   const [hasStarted, setHasStarted] = useState(false)
+  const [buffering, setBuffering] = useState(false)
   const fallbackAspect = orientation === 'portrait' ? 9 / 16 : 16 / 9
   const lockedAspect = Number.isFinite(fixedAspect) && fixedAspect > 0 ? fixedAspect : null
   const [aspect, setAspect] = useState(lockedAspect ?? fallbackAspect)
@@ -95,25 +107,81 @@ export function WorkVideoPlayer({
     setHasStarted(false)
   }, [orientation, src, lockedAspect])
 
+  const paintProgress = (ratio, time, total) => {
+    const safe = Math.min(1, Math.max(0, ratio || 0))
+    const label = progressLabelRef.current
+    const input = progressInputRef.current
+    if (label) label.style.setProperty('--wp-progress', `${safe * 100}%`)
+    if (input && document.activeElement !== input) input.value = String(safe * 100)
+    if (timeCurrentRef.current) timeCurrentRef.current.textContent = formatTime(time)
+    if (total != null && timeDurationRef.current) {
+      timeDurationRef.current.textContent = formatTime(total)
+    }
+  }
+
+  const resetProgress = () => {
+    paintProgress(0, 0, 0)
+  }
+
+  // 换片时只重置进度。src 留在元素上，这样未播放时也能按比例铺满并露出首帧。
+  useEffect(() => {
+    loadedSrcRef.current = src ? new URL(src, window.location.href).href : ''
+    setBuffering(false)
+    setHasStarted(false)
+    resetProgress()
+  }, [src])
+
   useEffect(() => {
     const video = videoRef.current
     if (!video) return undefined
+    let cancelled = false
 
-    if (!active) {
+    if (!active || !playing || !src || externalUrl) {
       video.pause()
+      setBuffering(false)
       return undefined
     }
 
-    if (playing) {
-      setHasStarted(true)
+    setHasStarted(true)
+    setBuffering(true)
+
+    const begin = () => {
+      if (cancelled) return
       const playPromise = video.play()
-      if (playPromise?.catch) playPromise.catch(() => onPlayingChange?.(false))
-    } else {
-      video.pause()
+      if (!playPromise?.then) {
+        setBuffering(false)
+        return
+      }
+      playPromise
+        .then(() => {
+          if (!cancelled) setBuffering(false)
+        })
+        .catch(() => {
+          if (cancelled) return
+          setBuffering(false)
+          onPlayingChange?.(false)
+        })
     }
 
-    return undefined
-  }, [playing, active, onPlayingChange, src])
+    const absolute = new URL(src, window.location.href).href
+    if (loadedSrcRef.current !== absolute) {
+      loadedSrcRef.current = absolute
+      video.src = src
+    }
+    if (video.readyState < 2) {
+      const onReady = () => begin()
+      video.addEventListener('canplay', onReady, { once: true })
+      return () => {
+        cancelled = true
+        video.removeEventListener('canplay', onReady)
+      }
+    }
+
+    begin()
+    return () => {
+      cancelled = true
+    }
+  }, [playing, active, onPlayingChange, src, externalUrl])
 
   useEffect(() => {
     const video = videoRef.current
@@ -135,20 +203,44 @@ export function WorkVideoPlayer({
       window.open(externalUrl, '_blank', 'noopener,noreferrer')
       return
     }
-    onPlayingChange?.(!playing)
+    const next = !playing
+    onPlayingChange?.(next)
+    const video = videoRef.current
+    if (!video || !src) return
+    if (!next) {
+      video.pause()
+      setBuffering(false)
+      return
+    }
+    // 在点击栈里立刻 play，避免等 effect 时手势失效、大文件又像没点上
+    setHasStarted(true)
+    setBuffering(true)
+    const absolute = new URL(src, window.location.href).href
+    if (loadedSrcRef.current !== absolute) {
+      loadedSrcRef.current = absolute
+      video.src = src
+    }
+    const playPromise = video.play()
+    if (!playPromise?.then) return
+    playPromise
+      .then(() => setBuffering(false))
+      .catch(() => {
+        setBuffering(false)
+        onPlayingChange?.(false)
+      })
   }
 
   const onTimeUpdate = () => {
     const video = videoRef.current
-    if (!video || scrubbing || !video.duration) return
-    setCurrentTime(video.currentTime)
-    setProgress(video.currentTime / video.duration)
+    if (!video || scrubbingRef.current || !video.duration) return
+    if (!chromeRef.current) return
+    paintProgress(video.currentTime / video.duration, video.currentTime)
   }
 
   const onLoadedMeta = () => {
     const video = videoRef.current
     if (!video) return
-    setDuration(video.duration || 0)
+    if (timeDurationRef.current) timeDurationRef.current.textContent = formatTime(video.duration || 0)
     if (lockedAspect) return
     // 优先用真实宽高，保持原片比例
     if (video.videoWidth > 0 && video.videoHeight > 0) {
@@ -160,8 +252,8 @@ export function WorkVideoPlayer({
 
   const onEnded = () => {
     onPlayingChange?.(false)
-    setProgress(0)
-    setCurrentTime(0)
+    setBuffering(false)
+    resetProgress()
     setHasStarted(false)
   }
 
@@ -171,8 +263,7 @@ export function WorkVideoPlayer({
     const next = Math.min(1, Math.max(0, ratio))
     const time = next * video.duration
     video.currentTime = time
-    setCurrentTime(time)
-    setProgress(next)
+    paintProgress(next, time)
     if (time > 0) setHasStarted(true)
   }
 
@@ -195,15 +286,10 @@ export function WorkVideoPlayer({
     }
   }
 
-  const formatTime = (seconds) => {
-    if (!Number.isFinite(seconds) || seconds < 0) return '0:00'
-    const m = Math.floor(seconds / 60)
-    const s = Math.floor(seconds % 60)
-    return `${m}:${String(s).padStart(2, '0')}`
-  }
-
   const showChrome = !externalUrl && (hovered || scrubbing || volOpen)
+  chromeRef.current = showChrome
   const showPosterLayer = Boolean(letterboxPoster && poster && !playing && !hasStarted)
+  const showAsPause = playing && !buffering && !externalUrl
 
   return (
     <div
@@ -225,11 +311,15 @@ export function WorkVideoPlayer({
           ref={videoRef}
           className="work-vp__video"
           src={src || undefined}
-          poster={letterboxPoster ? undefined : poster}
+          poster={letterboxPoster ? undefined : poster || undefined}
           playsInline
           preload="metadata"
           onTimeUpdate={onTimeUpdate}
           onLoadedMetadata={onLoadedMeta}
+          onWaiting={() => {
+            if (playing) setBuffering(true)
+          }}
+          onPlaying={() => setBuffering(false)}
           onEnded={onEnded}
           onClick={togglePlay}
           aria-label={title}
@@ -247,11 +337,20 @@ export function WorkVideoPlayer({
 
         <button
           type="button"
-          className={`work-vp__play${playing && !externalUrl ? ' is-hidden' : ''}${playing && hovered && !externalUrl ? ' is-hint' : ''}`}
+          className={`work-vp__play${showAsPause && !hovered ? ' is-hidden' : ''}${showAsPause && hovered ? ' is-hint' : ''}${buffering ? ' is-buffering' : ''}`}
           onClick={togglePlay}
-          aria-label={externalUrl ? `在新标签打开 ${title}` : playing ? `暂停 ${title}` : `播放 ${title}`}
+          aria-busy={buffering}
+          aria-label={
+            externalUrl
+              ? `在新标签打开 ${title}`
+              : buffering
+                ? `正在加载 ${title}`
+                : playing
+                  ? `暂停 ${title}`
+                  : `播放 ${title}`
+          }
         >
-          {playing && !externalUrl ? <PauseIcon /> : <PlayIcon />}
+          {buffering ? <span className="work-vp__status">加载中</span> : showAsPause ? <PauseIcon /> : <PlayIcon />}
         </button>
 
         <div
@@ -259,31 +358,41 @@ export function WorkVideoPlayer({
           onClick={(event) => event.stopPropagation()}
         >
           <div className="work-vp__overlay-row">
-            <span className="work-vp__time" aria-hidden="true">
-              {formatTime(currentTime)}
+            <span ref={timeCurrentRef} className="work-vp__time" aria-hidden="true">
+              0:00
             </span>
             <label
+              ref={progressLabelRef}
               className="work-vp__progress"
               htmlFor={progressId}
-              style={{ '--wp-progress': `${progress * 100}%` }}
+              style={{ '--wp-progress': '0%' }}
             >
               <span className="visually-hidden">播放进度</span>
               <input
+                ref={progressInputRef}
                 id={progressId}
                 type="range"
                 min="0"
                 max="100"
                 step="0.1"
-                value={progress * 100}
+                defaultValue={0}
                 onChange={onProgressInput}
-                onPointerDown={() => setScrubbing(true)}
-                onPointerUp={() => setScrubbing(false)}
-                onPointerCancel={() => setScrubbing(false)}
-                aria-valuetext={`${Math.round(progress * 100)}%`}
+                onPointerDown={() => {
+                  scrubbingRef.current = true
+                  setScrubbing(true)
+                }}
+                onPointerUp={() => {
+                  scrubbingRef.current = false
+                  setScrubbing(false)
+                }}
+                onPointerCancel={() => {
+                  scrubbingRef.current = false
+                  setScrubbing(false)
+                }}
               />
             </label>
-            <span className="work-vp__time" aria-hidden="true">
-              {formatTime(duration)}
+            <span ref={timeDurationRef} className="work-vp__time" aria-hidden="true">
+              0:00
             </span>
 
             <div

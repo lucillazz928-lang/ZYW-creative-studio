@@ -35,24 +35,35 @@ function getClips(item) {
 function AiClipPlayer({ clip, isPlaying, onToggle, portrait = false }) {
   const videoRef = useRef(null)
   const [aspect, setAspect] = useState(portrait ? 9 / 16 : 16 / 9)
-
+  const [buffering, setBuffering] = useState(false)
   useEffect(() => {
     setAspect(portrait ? 9 / 16 : 16 / 9)
+    setBuffering(false)
   }, [clip.src, portrait])
 
   useEffect(() => {
     const video = videoRef.current
     if (!video) return undefined
 
-    if (isPlaying) {
-      const playPromise = video.play()
-      if (playPromise?.catch) playPromise.catch(() => {})
-    } else {
+    if (!isPlaying) {
       video.pause()
+      setBuffering(false)
+      return undefined
+    }
+
+    setBuffering(true)
+    const playPromise = video.play()
+    if (playPromise?.then) {
+      playPromise
+        .then(() => setBuffering(false))
+        .catch(() => {
+          setBuffering(false)
+          onToggle(clip.key, false)
+        })
     }
 
     return undefined
-  }, [isPlaying])
+  }, [isPlaying, clip.src, clip.key, onToggle])
 
   const onLoadedMeta = () => {
     const video = videoRef.current
@@ -63,10 +74,30 @@ function AiClipPlayer({ clip, isPlaying, onToggle, portrait = false }) {
   return (
     <button
       type="button"
-      className={`ai-reel__player${isPlaying ? ' is-playing' : ''}${portrait ? ' ai-reel__player--portrait' : ''}`}
+      className={`ai-reel__player${isPlaying ? ' is-playing' : ''}${buffering ? ' is-buffering' : ''}${portrait ? ' ai-reel__player--portrait' : ''}`}
       style={{ aspectRatio: String(aspect), ['--ai-ar']: String(aspect) }}
-      onClick={() => onToggle(clip.key, !isPlaying)}
-      aria-label={isPlaying ? `暂停 ${clip.alt}` : `播放 ${clip.alt}`}
+      onClick={() => {
+        const next = !isPlaying
+        onToggle(clip.key, next)
+        const video = videoRef.current
+        if (!video) return
+        if (!next) {
+          video.pause()
+          setBuffering(false)
+          return
+        }
+        setBuffering(true)
+        const playPromise = video.play()
+        if (!playPromise?.then) return
+        playPromise
+          .then(() => setBuffering(false))
+          .catch(() => {
+            setBuffering(false)
+            onToggle(clip.key, false)
+          })
+      }}
+      aria-label={buffering ? `正在加载 ${clip.alt}` : isPlaying ? `暂停 ${clip.alt}` : `播放 ${clip.alt}`}
+      aria-busy={buffering}
     >
       <video
         ref={videoRef}
@@ -80,7 +111,7 @@ function AiClipPlayer({ clip, isPlaying, onToggle, portrait = false }) {
         aria-hidden="true"
       />
       <span className="ai-reel__play" aria-hidden="true">
-        <PlayIcon />
+        {buffering ? <span className="ai-reel__status">加载中</span> : <PlayIcon />}
       </span>
     </button>
   )

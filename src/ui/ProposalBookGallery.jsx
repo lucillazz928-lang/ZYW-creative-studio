@@ -36,6 +36,7 @@ export function ProposalBookGallery({ onClose }) {
   )
   const [openPages, setOpenPages] = useState(() => new Set())
   const [isSnappingShut, setIsSnappingShut] = useState(false)
+  const [readyThrough, setReadyThrough] = useState(2)
   const snapTimerRef = useRef(0)
 
   const activeBook = useMemo(
@@ -45,6 +46,20 @@ export function ProposalBookGallery({ onClose }) {
 
   const pageCount = activeBook?.pages.length ?? 0
   const lastPageIndex = Math.max(0, pageCount - 1)
+  const maxOpen = openPages.size ? Math.max(...openPages) : -1
+  const imageLimit = Math.max(readyThrough, maxOpen)
+
+  useEffect(() => {
+    setReadyThrough(2)
+  }, [activeBookId])
+
+  useEffect(() => {
+    if (readyThrough >= pageCount - 1) return undefined
+    const id = window.setTimeout(() => {
+      setReadyThrough((current) => Math.min(pageCount - 1, current + 2))
+    }, 240)
+    return () => window.clearTimeout(id)
+  }, [readyThrough, pageCount, activeBookId])
   const anyPageOpen = openPages.size > 0
   const allPagesOpen = pageCount > 0 && openPages.size === pageCount
 
@@ -80,6 +95,7 @@ export function ProposalBookGallery({ onClose }) {
         return
       }
 
+      setReadyThrough((current) => Math.max(current, index + 2))
       setOpenPages((prev) => {
         const next = new Set(prev)
         if (next.has(index)) next.delete(index)
@@ -157,6 +173,7 @@ export function ProposalBookGallery({ onClose }) {
         {activeBook.pages.map((page, index) => {
           const isOpen = openPages.has(index)
           const isLast = index === lastPageIndex
+          const showImage = index <= imageLimit
           return (
             <button
               key={`${activeBook.id}-${index}`}
@@ -174,8 +191,18 @@ export function ProposalBookGallery({ onClose }) {
               }
               onClick={() => togglePage(index)}
             >
-              <img src={page.front} alt={page.frontAlt} draggable={false} />
-              <img src={page.back} alt={page.backAlt} draggable={false} />
+              <img
+                src={showImage ? page.front : undefined}
+                alt={page.frontAlt}
+                draggable={false}
+                decoding="async"
+              />
+              <img
+                src={showImage ? page.back : undefined}
+                alt={page.backAlt}
+                draggable={false}
+                decoding="async"
+              />
             </button>
           )
         })}

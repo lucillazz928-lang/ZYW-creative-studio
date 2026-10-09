@@ -2,6 +2,18 @@ import { useRef } from 'react'
 import { useInteraction } from '../../state/interactionState'
 import { animateObjectHover } from '../../animation/objectAnimations'
 
+function pointerStillInside(event, root) {
+  if (!root || !event.intersections?.length) return false
+  return event.intersections.some((hit) => {
+    let node = hit.object
+    while (node) {
+      if (node === root) return true
+      node = node.parent
+    }
+    return false
+  })
+}
+
 export function InteractiveObject({
   objectId,
   overlay,
@@ -12,6 +24,7 @@ export function InteractiveObject({
   scaleOnHover = true,
 }) {
   const rootRef = useRef(null)
+  const hoveringRef = useRef(false)
   const { cameraState, hoverObject, selectObject, enterDesk, isTransitioning, overlayState } =
     useInteraction()
 
@@ -27,11 +40,17 @@ export function InteractiveObject({
       onPointerOver={(event) => {
         event.stopPropagation()
         if (!canUse) return
+        // 在同一物件的子网格之间移动时不要重播缩放，否则悬停会抖
+        if (hoveringRef.current) return
+        hoveringRef.current = true
         // 氛围物件不可点，不挂 Tooltip
         if (!ambient) hoverObject(objectId)
         if (scaleOnHover) animateObjectHover(rootRef.current, true)
       }}
       onPointerOut={(event) => {
+        if (pointerStillInside(event, rootRef.current)) return
+        if (!hoveringRef.current) return
+        hoveringRef.current = false
         if (!ambient) hoverObject(null)
         if (scaleOnHover) animateObjectHover(rootRef.current, false)
       }}

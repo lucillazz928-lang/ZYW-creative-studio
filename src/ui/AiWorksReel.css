@@ -175,6 +175,8 @@
 }
 
 .ai-reel__video {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
@@ -211,6 +213,17 @@
 
 .ai-reel__player.is-playing .ai-reel__play {
   opacity: 0;
+}
+
+.ai-reel__player.is-buffering .ai-reel__play {
+  opacity: 1;
+}
+
+.ai-reel__status {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
 }
 
 .ai-reel__player:hover .ai-reel__play,

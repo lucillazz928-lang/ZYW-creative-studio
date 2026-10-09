@@ -11,5 +11,6 @@ export function animateObjectHover(object, hovered) {
     z: scale,
     duration: 0.28,
     ease: 'power2.out',
+    overwrite: 'auto',
   })
 }

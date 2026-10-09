@@ -277,7 +277,7 @@ function PlatformStage({ stage, stackMode }) {
         {steps.map((step) => (
           <article key={step.id} className="tm-stage__stack-item">
             <div className="tm-stage__visual">
-              <img src={step.image} alt={step.alt || ''} loading="lazy" draggable={false} />
+              <img src={step.image} alt={step.alt || ''} loading="lazy" decoding="async" draggable={false} />
             </div>
             <p className="tm-stage__kicker">{step.kicker}</p>
             <h3 className="tm-stage__step-title">{step.titleZh}</h3>
@@ -299,7 +299,7 @@ function PlatformStage({ stage, stackMode }) {
                 className={`tm-stage__frame${i === index ? ' is-active' : ''}`}
                 aria-hidden={i !== index}
               >
-                <img src={step.image} alt={step.alt || ''} loading="lazy" draggable={false} />
+                <img src={step.image} alt={step.alt || ''} loading="lazy" decoding="async" draggable={false} />
               </div>
             ))}
           </div>
@@ -393,7 +393,7 @@ function ImageGrid({ title, images, cols = 2, bare = false }) {
               key={img.id}
               className={`tm-shots__item${img.wide ? ' tm-shots__item--wide' : ''}`}
             >
-              <img src={img.src} alt={img.alt} loading="lazy" draggable={false} />
+              <img src={img.src} alt={img.alt} loading="lazy" decoding="async" draggable={false} />
               <figcaption>{img.caption}</figcaption>
             </figure>
           ))}
@@ -407,7 +407,7 @@ function ImageGrid({ title, images, cols = 2, bare = false }) {
       <div className={`tm-grid tm-grid--${cols}`}>
         {images.map((img) => (
           <figure key={img.id} className={`tm-fig${img.wide ? ' tm-fig--wide' : ''}`}>
-            <img src={img.src} alt={img.alt} loading="lazy" draggable={false} />
+            <img src={img.src} alt={img.alt} loading="lazy" decoding="async" draggable={false} />
             <figcaption>{img.caption}</figcaption>
           </figure>
         ))}
@@ -424,7 +424,7 @@ function StoryCards({ items }) {
       {items.map((item) => (
         <article key={item.id} className="tm-story__card">
           <div className="tm-story__visual">
-            <img src={item.src} alt={item.alt || ''} loading="lazy" draggable={false} />
+            <img src={item.src} alt={item.alt || ''} loading="lazy" decoding="async" draggable={false} />
           </div>
           <div className="tm-story__copy">
             {item.kicker ? <p className="tm-story__kicker">{item.kicker}</p> : null}
@@ -546,7 +546,7 @@ function ExtraPage({ page, playingId, onPlay }) {
   if (page.type === 'splitImage') {
     const img = page.image
     const media = (
-      <img src={img.src} alt={img.alt} loading="lazy" draggable={false} />
+      <img src={img.src} alt={img.alt} loading="lazy" decoding="async" draggable={false} />
     )
     return (
       <div className="tm-ops">

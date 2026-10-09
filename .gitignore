@@ -5,6 +5,8 @@ dist
 .vite
 .env
 .env.*.local
+_media-originals/
+.tmp-ffmpeg/
 .img2threejs
 .cursor/skills
 _doc_extract

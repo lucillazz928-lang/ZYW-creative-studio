@@ -1278,7 +1278,7 @@
 
 /* 内容页：按真实比例 */
 .tm-studio .tm-vcarousel--landscape .work-vp--landscape .work-vp__stage {
-  --wp-max-w: min(100%, 980px);
+  --wp-max-w: min(92vw, 980px);
   --wp-max-h: min(58vh, 560px);
   width: min(var(--wp-max-w), calc(var(--wp-max-h) * var(--wp-ar, 1.777)));
   max-width: 100%;
@@ -1318,7 +1318,7 @@
 }
 
 .tm-vcarousel--landscape .work-vp--landscape .work-vp__stage {
-  --wp-max-w: min(100%, 860px);
+  --wp-max-w: min(92vw, 860px);
   --wp-max-h: min(48vh, 480px);
   width: min(var(--wp-max-w), calc(var(--wp-max-h) * var(--wp-ar, 1.777)));
   max-width: 100%;
@@ -1729,7 +1729,7 @@
 }
 
 .tm-kuwo .tm-vcarousel--landscape .work-vp--landscape .work-vp__stage {
-  --wp-max-w: min(100%, 980px);
+  --wp-max-w: min(92vw, 980px);
   --wp-max-h: min(56vh, 540px);
   width: min(var(--wp-max-w), calc(var(--wp-max-h) * var(--wp-ar, 1.777)));
   max-height: var(--wp-max-h);

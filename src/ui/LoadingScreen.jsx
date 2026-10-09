@@ -12,25 +12,36 @@ export function LoadingScreen({ assetsReady = false, onFinished }) {
   onFinishedRef.current = onFinished
 
   useEffect(() => {
+    if (!assetsReady) return undefined
+    setPercent(100)
+    return undefined
+  }, [assetsReady])
+
+  useEffect(() => {
     const started = performance.now()
     let shown = 1
     let raf = 0
 
     const loop = (now) => {
+      if (readyRef.current) {
+        setPercent(100)
+        return
+      }
       const elapsed = now - started
       const crawled = Math.min(90, 1 + Math.floor((elapsed / CRAWL_MS) * 89))
-      const target = readyRef.current ? 100 : crawled
-      if (shown < target) {
-        shown += 1
+      if (crawled !== shown) {
+        shown = crawled
         setPercent(shown)
       }
-      if (shown < 100) {
-        raf = window.requestAnimationFrame(loop)
-      }
+      raf = window.requestAnimationFrame(loop)
     }
 
     raf = window.requestAnimationFrame(loop)
-    return () => window.cancelAnimationFrame(raf)
+    const giveUp = window.setTimeout(() => setPercent(100), 8000)
+    return () => {
+      window.cancelAnimationFrame(raf)
+      window.clearTimeout(giveUp)
+    }
   }, [])
 
   useEffect(() => {
