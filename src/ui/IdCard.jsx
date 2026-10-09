@@ -424,7 +424,7 @@ export function IdCard() {
               height={112}
               radius={12}
               spread={520}
-              lift={120}
+              lift={96}
               tilt={7}
               flapAngle={42}
               restAngle={16}

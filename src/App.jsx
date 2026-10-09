@@ -162,10 +162,8 @@ function AppShell() {
             <EntryEnterHint />
           </>
         ) : null}
-        {isLoaded &&
-        (cameraState === 'room' || cameraState === 'desk') &&
-        !isTransitioning &&
-        !overlayState ? (
+        {/* 远视角保留顶栏；近视角（desk）不显示 */}
+        {isLoaded && cameraState === 'room' && !isTransitioning && !overlayState ? (
           <DeskTopNav />
         ) : null}
         {isLoaded && cameraState === 'room' && !isTransitioning && !overlayState ? (

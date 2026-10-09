@@ -107,14 +107,13 @@ function VideoCarousel({ items, playingId, onPlay }) {
           </button>
         ) : null}
       </div>
-      <p className="tm-vcarousel__caption">
-        <span className="tm-vcarousel__caption-zh">{clip.title}</span>
-        {hasMultiple ? (
+      {hasMultiple ? (
+        <p className="tm-vcarousel__caption" aria-live="polite">
           <span className="tm-vcarousel__page">
             {index + 1} / {items.length}
           </span>
-        ) : null}
-      </p>
+        </p>
+      ) : null}
     </div>
   )
 }

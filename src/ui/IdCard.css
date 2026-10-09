@@ -637,9 +637,9 @@
 
 .about-page__marquee--wave {
   margin-top: 0;
-  margin-bottom: clamp(12px, 2vh, 24px);
+  margin-bottom: clamp(20px, 3.2vh, 40px);
   padding-top: clamp(4px, 1vh, 12px);
-  padding-bottom: clamp(4px, 1vh, 10px);
+  padding-bottom: clamp(8px, 1.4vh, 16px);
   width: 100%;
 }
 
@@ -718,8 +718,8 @@
   flex: 1;
   width: 100%;
   min-height: clamp(420px, 58vh, 620px);
-  margin-top: clamp(28px, 4.5vh, 56px);
-  padding: 48px var(--space-page) 20px;
+  margin-top: clamp(40px, 6vh, 72px);
+  padding: 56px var(--space-page) 20px;
   overflow: visible;
   box-sizing: border-box;
 }
@@ -1336,14 +1336,15 @@
 
   .about-page__strengths-stage {
     min-height: 380px;
-    padding-top: 24px;
+    margin-top: clamp(48px, 7vh, 80px);
+    padding-top: 40px;
   }
 
   .about-page__strengths-folder {
     --ff-w: 132px !important;
     --ff-h: 98px !important;
     --ff-spread: 240px !important;
-    --ff-lift: 88px !important;
+    --ff-lift: 72px !important;
   }
 
   .about-page__strengths-folder .folder-float__item {

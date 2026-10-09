@@ -720,15 +720,25 @@ button {
 
 .overlay-panel--content-case {
   position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
   padding: 0;
+  margin: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   align-items: stretch;
   justify-content: stretch;
   overflow: hidden;
 }
 
 .overlay-shell--case {
-  background: rgba(246, 241, 232, 0.92);
-  backdrop-filter: blur(10px);
+  padding: 0;
+  /* 由 .tm-case 自带品牌背景铺满，外壳不再垫一层米色 */
+  background: transparent;
+  backdrop-filter: none;
 }
 
 .overlay-panel--content-case > .close-button {
